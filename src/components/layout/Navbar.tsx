@@ -52,7 +52,7 @@ export const Navbar: React.FC = () => {
                         ))}
                         <Button variant="primary" size="sm" className="gap-2">
                             <Phone size={18} />
-                            08101665961
+                            +2349079080606
                         </Button>
                     </div>
 

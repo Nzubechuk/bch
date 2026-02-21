@@ -11,12 +11,32 @@ export const Contact: React.FC = () => {
         message: ''
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulate form submission
-        console.log('Form submitted:', formState);
-        alert('Thank you for your inquiry. We will contact you shortly.');
-        setFormState({ name: '', email: '', phone: '', message: '' });
+        setIsSubmitting(true);
+        setSubmitStatus('idle');
+
+        // Simulate network request
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // Randomly simulate success (or you can force it to always succeed)
+            // For now, let's assume success
+            console.log('Form submitted:', formState);
+            setSubmitStatus('success');
+            setFormState({ name: '', email: '', phone: '', message: '' });
+
+            // Clear success message after 5 seconds
+            setTimeout(() => setSubmitStatus('idle'), 5000);
+        } catch (error) {
+            console.error('Submission failed', error);
+            setSubmitStatus('error');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -60,7 +80,7 @@ export const Contact: React.FC = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-semibold text-gray-900 mb-1">Call Us</h4>
-                                    <p className="text-gray-600">08101665961</p>
+                                    <p className="text-gray-600">+2349079080606</p>
                                     <p className="text-sm text-gray-500">Available 24/7 for urgent inquiries</p>
                                 </div>
                             </div>
@@ -71,7 +91,7 @@ export const Contact: React.FC = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-semibold text-gray-900 mb-1">Email Us</h4>
-                                    <p className="text-gray-600">contact@brightcarehomes.com</p>
+                                    <p className="text-gray-600">contact@brightcarehomesng.online</p>
                                 </div>
                             </div>
 
@@ -97,6 +117,19 @@ export const Contact: React.FC = () => {
                         className="bg-white p-8 rounded-2xl shadow-lg"
                     >
                         <h3 className="text-2xl font-bold mb-6 text-gray-900">Send us a Message</h3>
+
+                        {submitStatus === 'success' && (
+                            <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-lg border border-green-200">
+                                Thank you! Your message has been sent successfully. We will get back to you shortly.
+                            </div>
+                        )}
+
+                        {submitStatus === 'error' && (
+                            <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
+                                Something went wrong. Please try again later or call us directly.
+                            </div>
+                        )}
+
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -108,7 +141,8 @@ export const Contact: React.FC = () => {
                                         required
                                         value={formState.name}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                        disabled={isSubmitting}
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
                                         placeholder="John Doe"
                                     />
                                 </div>
@@ -120,8 +154,9 @@ export const Contact: React.FC = () => {
                                         name="phone"
                                         value={formState.phone}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                        placeholder="08101665961"
+                                        disabled={isSubmitting}
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                        placeholder="+2349079080606"
                                     />
                                 </div>
                             </div>
@@ -135,7 +170,8 @@ export const Contact: React.FC = () => {
                                     required
                                     value={formState.email}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                    disabled={isSubmitting}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
                                     placeholder="john@example.com"
                                 />
                             </div>
@@ -149,13 +185,28 @@ export const Contact: React.FC = () => {
                                     rows={4}
                                     value={formState.message}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
+                                    disabled={isSubmitting}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                                     placeholder="How can we help you?"
                                 />
                             </div>
 
-                            <Button type="submit" size="lg" className="w-full">
-                                Send Message
+                            <Button
+                                type="submit"
+                                size="lg"
+                                className="w-full relative"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <span className="opacity-0">Send Message</span>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    'Send Message'
+                                )}
                             </Button>
                         </form>
                     </motion.div>
